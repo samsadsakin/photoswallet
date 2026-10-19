@@ -107,9 +107,9 @@ export default function AnimatedGlassyHomePage() {
               </div>
               <div>
                 <h1 className="font-extrabold text-lg leading-none tracking-wide text-white">
-                  Photo<span className="text-blue-500">Vault</span>
+                  Photo<span className="text-blue-500">Wallet</span>
                 </h1>
-                <p className="text-[10px] text-slate-400 mt-1">Your Moments, Always Safe</p>
+                <p className="text-[10px] text-slate-400 mt-1">Our Moments, Always Safe</p>
               </div>
             </div>
 
@@ -245,7 +245,7 @@ export default function AnimatedGlassyHomePage() {
             </div>
             <div>
               <h1 className="font-extrabold text-base tracking-wide text-white leading-none">
-                Photo<span className="text-blue-500">Vault</span>
+                Photo<span className="text-blue-500">Wallet</span>
               </h1>
               <p className="text-[9px] text-slate-400 mt-0.5">Secure Cloud Storage</p>
             </div>
