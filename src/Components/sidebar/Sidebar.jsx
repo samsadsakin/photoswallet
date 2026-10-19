@@ -10,6 +10,7 @@ import {
   Upload,
   HardDrive,
   User,
+  Users as UsersIcon,
   Search,
   Bell,
   Cloud,
@@ -21,10 +22,15 @@ export default function Sidebar() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
+    fetch("/api/user/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setUser(data))
+      .catch(() => setUser(null));
   }, []);
 
   useEffect(() => {
@@ -43,19 +49,29 @@ export default function Sidebar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  const allNavItems = [
-    { href: "/", label: "Home", icon: Home },
-    { href: "/albums", label: "Albums", icon: Folder },
-    { href: "/gallery", label: "Gallery", icon: ImageIcon },
-    { href: "/upload", label: "Upload", icon: Upload },
-    { href: "/admin/drives", label: "My Drive", icon: HardDrive },
-    { href: "/profile", label: "Profile", icon: User },
-  ];
+  // নেভিগেশন তালিকা
+  const allNavItems = useMemo(() => {
+    const items = [
+      { href: "/", label: "Home", icon: Home },
+      { href: "/albums", label: "Albums", icon: Folder },
+      { href: "/gallery", label: "Gallery", icon: ImageIcon },
+      { href: "/upload", label: "Upload", icon: Upload },
+      { href: "/admin/drives", label: "Drives", icon: HardDrive },
+    ];
 
-  // Active link condition hide
+    if (user?.role === "admin") {
+      items.push({ href: "/admin/users", label: "Users", icon: UsersIcon });
+    }
+
+    items.push({ href: "/profile", label: "Profile", icon: User });
+
+    return items;
+  }, [user]);
+
+  // বর্তমান অ্যাক্টিভ পেজটি হাইড রেখে তালিকা তৈরি
   const visibleNavItems = useMemo(() => {
     return allNavItems.filter((item) => item.href !== pathname);
-  }, [pathname]);
+  }, [allNavItems, pathname]);
 
   if (!mounted) return null;
 
@@ -146,54 +162,13 @@ export default function Sidebar() {
                   <p className="text-xs font-bold text-white">14.4 GB / 45 GB</p>
                 </div>
               </div>
-
-              <div className="space-y-2 text-[10px] pt-1">
-                <div>
-                  <div className="flex justify-between font-medium text-slate-300 mb-0.5">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" /> Drive 1 (Main)
-                    </span>
-                    <span>48%</span>
-                  </div>
-                  <p className="text-[9px] text-slate-500 pl-3.5">7.2 GB / 15 GB</p>
-                  <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mt-1">
-                    <div className="bg-emerald-400 h-full rounded-full" style={{ width: "48%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between font-medium text-slate-300 mb-0.5">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" /> Drive 2
-                    </span>
-                    <span>34%</span>
-                  </div>
-                  <p className="text-[9px] text-slate-500 pl-3.5">5.1 GB / 15 GB</p>
-                  <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mt-1">
-                    <div className="bg-blue-500 h-full rounded-full" style={{ width: "34%" }} />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between font-medium text-slate-300 mb-0.5">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-purple-400 inline-block" /> Drive 3
-                    </span>
-                    <span>14%</span>
-                  </div>
-                  <p className="text-[9px] text-slate-500 pl-3.5">2.1 GB / 15 GB</p>
-                  <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mt-1">
-                    <div className="bg-purple-400 h-full rounded-full" style={{ width: "14%" }} />
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div className="bg-white/5 rounded-2xl p-3 border border-white/10 flex items-center gap-2.5">
               <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
               <div>
-                <p className="text-xs font-bold text-slate-200">Secure & Private</p>
-                <p className="text-[9px] text-slate-400 leading-tight">Your photos are protected with industry standard security.</p>
+                <p className="text-xs font-bold text-slate-200">Secure Cloud</p>
+                <p className="text-[9px] text-slate-400 leading-tight">Protected personal photo storage.</p>
               </div>
             </div>
           </div>
@@ -202,31 +177,31 @@ export default function Sidebar() {
 
       {/* MOBILE BOTTOM NAVBAR */}
       <div
-        className={`lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50 transition-all duration-500 ease-out ${
+        className={`lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-50 transition-all duration-500 ease-out ${
           showNavbar ? "translate-y-0 opacity-100 scale-100" : "translate-y-28 opacity-0 scale-95 pointer-events-none"
         }`}
       >
         <div
-          className="relative px-3 py-2 rounded-[28px] flex items-center justify-between border border-white/20 backdrop-blur-3xl"
+          className="relative px-2 py-2 rounded-[28px] flex items-center justify-around border border-white/20 backdrop-blur-3xl overflow-x-auto no-scrollbar"
           style={{
-            background: "rgba(10, 15, 29, 0.8)",
+            background: "rgba(10, 15, 29, 0.85)",
             boxShadow: "0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.25)",
           }}
         >
-          {visibleNavItems.slice(0, 5).map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
 
             if (item.label === "Upload") {
               return (
-                <div key={item.href} className="px-1">
+                <div key={item.href} className="px-1 shrink-0">
                   <Link
                     href={item.href}
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-white border border-white/30 -mt-5 shadow-[0_10px_25px_rgba(37,99,235,0.6)] active:scale-90 transition cursor-pointer"
+                    className="w-11 h-11 rounded-full flex items-center justify-center text-white border border-white/30 -mt-5 shadow-[0_10px_25px_rgba(37,99,235,0.6)] active:scale-90 transition cursor-pointer"
                     style={{
                       background: "radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.95), rgba(37, 99, 235, 0.9))",
                     }}
                   >
-                    <Plus className="w-6 h-6 stroke-[2.5]" />
+                    <Plus className="w-5 h-5 stroke-[2.5]" />
                   </Link>
                 </div>
               );
@@ -236,10 +211,12 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-2xl relative text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+                className="flex-1 min-w-[50px] flex flex-col items-center gap-0.5 py-1 rounded-2xl relative text-slate-400 hover:text-slate-200 transition-colors cursor-pointer shrink-0"
               >
-                <Icon className="w-5 h-5 z-10" />
-                <span className="text-[10px] tracking-tight z-10">{item.label}</span>
+                <Icon className="w-4 h-4 z-10" />
+                <span className="text-[9px] tracking-tight z-10 truncate max-w-[55px] text-center">
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -249,8 +226,27 @@ export default function Sidebar() {
   );
 }
 
-// TOP HEADER COMPONENT (যেহেতু Navbar.jsx ডিলিট করা হয়েছে)
+// TOP HEADER
 export function TopHeader() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/user/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setUser(data))
+      .catch(() => setUser(null));
+  }, []);
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
   return (
     <header
       className="sticky top-0 z-30 px-4 lg:px-8 py-3.5 border-b border-white/10 flex items-center justify-between backdrop-blur-2xl"
@@ -289,14 +285,14 @@ export function TopHeader() {
         </button>
         <Link href="/profile" className="flex items-center gap-3 pl-2 lg:border-l lg:border-white/10">
           <div
-            className="w-8 h-8 rounded-2xl flex items-center justify-center text-xs font-bold text-white border border-white/20 shadow-lg"
+            className="w-8 h-8 rounded-2xl flex items-center justify-center text-xs font-bold text-white border border-white/20 shadow-lg tracking-wider"
             style={{ background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)" }}
           >
-            SS
+            {user ? getInitials(user.name) : "..."}
           </div>
           <div className="hidden lg:block text-xs">
-            <p className="font-semibold text-slate-200 leading-none">Samsad Sakin</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Admin</p>
+            <p className="font-semibold text-slate-200 leading-none">{user ? user.name : "Loading..."}</p>
+            <p className="text-[10px] text-slate-400 mt-0.5 capitalize">{user ? `${user.role} Account` : "Account"}</p>
           </div>
         </Link>
       </div>

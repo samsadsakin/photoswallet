@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "userId": "1",
+    "name": "Samsad Sakin",
+    "phone": "01540553900",
+    "passwordHash": "$2b$10$NM5QeYtP3j5z8s2J3s2wTuC9relSNYYKOpz7El7ggq6GdCPAafl9G",
+    "role": "admin"
+  },
+  {
+    "id": "1792426535060",
+    "userId": "2",
+    "name": "Sweet",
+    "phone": "01873390512",
+    "passwordHash": "$2b$10$sNFRu86uCKDarIxQHSxotuR4Fj0TV0hQhpztLvW4vARhT/XDmY2ni",
+    "role": "user"
+  }
+]
